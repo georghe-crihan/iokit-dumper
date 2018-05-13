@@ -24,7 +24,7 @@ uint64_t get_kslide(void)
     
     return _kslide;
 #else
-    return 0;
+    return kslide;
 #endif
 }
 
@@ -79,6 +79,7 @@ mach_port_t task_for_pid_workaround(int Pid)
 
 mach_port_t get_kernel_task(void)
 {
+#ifdef _x86_64_
     if (getuid() != 0) {
         __dbg("Program should be run as root.");
         return 0;
@@ -86,6 +87,10 @@ mach_port_t get_kernel_task(void)
     
     mach_port_t ktask = task_for_pid_workaround(0);
     if (!ktask) {
+#else
+    mach_port_t ktask;
+    if (KERN_SUCCESS!=task_for_pid(mach_task_self(), 0, &ktask)) {
+#endif
         __dbg("processor_set_tasks() failed. is SIP enabled?");
         return 0;
     }
