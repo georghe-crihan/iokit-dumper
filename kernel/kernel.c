@@ -6,19 +6,20 @@
 //  Copyright © 2015 jndok. All rights reserved.
 //
 
+#include <mach/vm_types.h>
 #include "kernel.h"
 
-uint64_t kslide=0;
+vm_offset_t kslide=0;
 
-uint64_t get_kslide(void)
+vm_offset_t get_kslide(void)
 {
 #ifdef KERNEL_ASLR
     if (getuid() != 0) {
         return -1;
     }
     
-    uint64_t _kslide=0;
-    uint64_t _kslide_sz=sizeof(kslide);
+    vm_offset_t _kslide=0;
+    vm_offset_t_t _kslide_sz=sizeof(kslide);
     
     syscall(SYS_kas_info, KAS_INFO_KERNEL_TEXT_SLIDE_SELECTOR, &_kslide, &_kslide_sz);
     
@@ -105,15 +106,15 @@ mach_port_t get_kernel_task(void)
     return ktask;
 }
 
-void *read_kernel_memory(task_t task, vm_offset_t addr, uint32_t size)
+pointer_t read_kernel_memory(vm_map_t task, vm_offset_t addr, mach_vm_size_t size)
 {
-    void* mem = malloc(size);
-    mach_vm_size_t sz = 0;
-    mach_vm_read_overwrite(task, addr, size, (mach_vm_address_t)mem, (mach_vm_size_t*)&sz);
+    pointer_t mem = (pointer_t)malloc(size);
+    vm_size_t sz = 0;
+    mach_vm_read_overwrite(task, (vm_address_t)addr, (vm_size_t)size, (pointer_t)mem, &sz);
     
     if (!mem) {
         __dbg("(!) read failed.");
-        return NULL;
+        return (pointer_t)NULL;
     }
     
     return mem;
@@ -122,7 +123,7 @@ void *read_kernel_memory(task_t task, vm_offset_t addr, uint32_t size)
 __attribute__((always_inline)) void read_kernel_memory_in_buffer(task_t task, vm_offset_t addr, uint32_t size, void *buffer)
 {
     mach_vm_size_t sz = 0;
-    mach_vm_read_overwrite(task, addr, size, (mach_vm_address_t)buffer, (mach_vm_size_t*)&sz);
+    mach_vm_read_overwrite(task, addr, size, (pointer_t)buffer, (mach_vm_size_t*)&sz);
     
     if (!buffer) {
         __dbg("(!) read failed.");

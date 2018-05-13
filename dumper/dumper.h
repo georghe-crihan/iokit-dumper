@@ -42,7 +42,7 @@ struct hierarchy_entry {
 };
 
 /*
- *  dump_hierarchy(uint64_t, const char*, boolean_t)
+ *  dump_hierarchy(vm_offset_t, const char*, boolean_t)
  *
  *  Writes the class hierarchy for kernel/KEXT ar address `addr`,
  *  in DOT format, at file `path`. If `overwrite` is set, it overwrites
@@ -50,6 +50,6 @@ struct hierarchy_entry {
  *  the file.
  *
  */
-uint32_t dump_hierarchy(task_t kport, uint64_t read_addr, char *name, const char *path, boolean_t override);
+uint32_t dump_hierarchy(task_t kport, vm_offset_t read_addr, char *name, const char *path, boolean_t override);
 
 #endif /* dumper_h */

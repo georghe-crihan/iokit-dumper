@@ -19,9 +19,9 @@
 
 /***/
 
-__attribute__((always_inline)) struct mach_header_64 *find_mach_header_kmem_addr(task_t task, uint64_t addr);
-__attribute__((always_inline)) struct segment_command_64 *find_segment_command_kmem(struct mach_header_64 *header, void *cmds_buffer, const char *seg_name);
-__attribute__((always_inline)) struct section_64 *find_section_command_kmem(struct segment_command_64 *seg_cmd, const char *sect_name);
+__attribute__((always_inline)) struct _B(mach_header) *find_mach_header_kmem_addr(task_t task, vm_offset_t addr);
+__attribute__((always_inline)) struct _B(segment_command) *find_segment_command_kmem(struct _B(mach_header) *header, pointer_t cmds_buffer, const char *seg_name);
+__attribute__((always_inline)) struct _B(section) *find_section_command_kmem(struct _B(segment_command) *seg_cmd, const char *sect_name);
 
 /***/
 

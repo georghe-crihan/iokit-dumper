@@ -7,12 +7,13 @@
 //  Copyright © 2015 jndok. All rights reserved.
 //
 
+#include <mach/vm_types.h>
 #import <Foundation/Foundation.h>
 
 extern CFDictionaryRef OSKextCopyLoadedKextInfo(CFArrayRef, CFArrayRef);
 
-uint64_t KextUnslidBaseAddress(const char *KextBundleName)
+vm_offset_t KextUnslidBaseAddress(const char *KextBundleName)
 {
-    return (UInt64)[((NSNumber*)(((__bridge NSDictionary*)OSKextCopyLoadedKextInfo(NULL, NULL))[[NSString stringWithUTF8String:KextBundleName]][@"OSBundleLoadAddress"])) unsignedLongLongValue];
+    return (vm_offset_t)[((NSNumber*)(((__bridge NSDictionary*)OSKextCopyLoadedKextInfo(NULL, NULL))[[NSString stringWithUTF8String:KextBundleName]][@"OSBundleLoadAddress"])) unsignedLongLongValue];
 }
 #endif

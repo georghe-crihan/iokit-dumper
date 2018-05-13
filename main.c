@@ -33,11 +33,12 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <getopt.h>
+#include <mach/vm_types.h>
 
 #include "import.h"
 
-extern uint64_t kslide;
-extern uint64_t KextUnslidBaseAddress(const char *KextBundleName);
+extern vm_offset_t kslide;
+extern vm_offset_t KextUnslidBaseAddress(const char *KextBundleName);
 
 void usage(void)
 {
@@ -49,7 +50,7 @@ int main(int argc, char *argv[]) {
     int option=0;
 
     char *name=NULL;
-    uint64_t read_addr=0;
+    vm_offset_t read_addr=0;
     char *path=NULL;
     boolean_t override=FALSE;
 
@@ -57,7 +58,11 @@ int main(int argc, char *argv[]) {
         switch (option) {
             case 'a':
                 if (strcmp(optarg, "kernel") == 0) {
+#ifdef _x86_64_
                     read_addr=0xffffff8000200000;
+#else
+                    // Now what?
+#endif
                 } else {
                     read_addr=KextUnslidBaseAddress(optarg);
                     if (read_addr == 0) {

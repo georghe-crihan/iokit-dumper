@@ -6,10 +6,11 @@
 //  Copyright © 2016 jndok. All rights reserved.
 //
 
+#include <mach/vm_types.h>
 #include "dumper.h"
 
-extern uint64_t kslide;
-extern uint64_t KextUnslidBaseAddress(const char *KextBundleName);
+extern vm_offset_t kslide;
+extern vm_offset_t KextUnslidBaseAddress(const char *KextBundleName);
 
 char *read_line(FILE *fin) {
     char *buffer;
@@ -48,25 +49,25 @@ char *read_line(FILE *fin) {
     return NULL;
 }
 
-uint32_t dump_hierarchy(task_t kport, uint64_t read_addr, char *name, const char *path, boolean_t override)
+uint32_t dump_hierarchy(task_t kport, vm_offset_t read_addr, char *name, const char *path, boolean_t override)
 {
-    uint64_t TEXT_SEG_START_ADDR=0, TEXT_SEG_END_ADDR=0, TEXT_SEG_SIZE=0;
-    uint64_t CONST_SECT_START_ADDR=0, CONST_SECT_SIZE=0, COMMON_SECT_START_ADDR=0, COMMON_SECT_END_ADDR=0, COMMON_SECT_SIZE=0;
+    vm_offset_t TEXT_SEG_START_ADDR=0, TEXT_SEG_END_ADDR=0, TEXT_SEG_SIZE=0;
+    vm_offset_t CONST_SECT_START_ADDR=0, CONST_SECT_SIZE=0, COMMON_SECT_START_ADDR=0, COMMON_SECT_END_ADDR=0, COMMON_SECT_SIZE=0;
 
-    struct mach_header_64 *header = find_mach_header_kmem_addr(kport, SLIDE_POINTER(read_addr));
+    struct _B(mach_header) *header = find_mach_header_kmem_addr(kport, SLIDE_POINTER(read_addr));
 
-    void *load_commands = read_kernel_memory(kport, SLIDE_POINTER(read_addr+sizeof(struct mach_header_64)), header->sizeofcmds);
+    pointer_t load_commands = read_kernel_memory(kport, SLIDE_POINTER(read_addr+sizeof(struct _B(mach_header))), header->sizeofcmds);
 
-    struct segment_command_64 *TEXT_SEG = find_segment_command_kmem(header, load_commands, SEG_TEXT);
-    struct segment_command_64 *DATA_SEG = find_segment_command_kmem(header, load_commands, SEG_DATA);
+    struct _B(segment_command) *TEXT_SEG = find_segment_command_kmem(header, load_commands, SEG_TEXT);
+    struct _B(segment_command) *DATA_SEG = find_segment_command_kmem(header, load_commands, SEG_DATA);
 
     if (!TEXT_SEG || !DATA_SEG) {
         __dbg("(!) Invalid KEXT.");
         return 2;
     }
 
-    struct section_64 *DATA_CONST_SECT = find_section_command_kmem(DATA_SEG, SECT_CONST);
-    struct section_64 *DATA_COMMON_SECT = find_section_command_kmem(DATA_SEG, SECT_COMMON);
+    struct _B(section) *DATA_CONST_SECT = find_section_command_kmem(DATA_SEG, SECT_CONST);
+    struct _B(section) *DATA_COMMON_SECT = find_section_command_kmem(DATA_SEG, SECT_COMMON);
 
     if (!DATA_CONST_SECT || !DATA_COMMON_SECT) {
         __dbg("(!) Invalid KEXT.");
@@ -84,12 +85,12 @@ uint32_t dump_hierarchy(task_t kport, uint64_t read_addr, char *name, const char
     COMMON_SECT_SIZE =          DATA_COMMON_SECT->size;
     COMMON_SECT_END_ADDR =      COMMON_SECT_START_ADDR + COMMON_SECT_SIZE;
 
-    void *const_sect_buffer = malloc(CONST_SECT_SIZE);
+    vm_offset_t *const_sect_buffer = malloc(CONST_SECT_SIZE);
     for (uint32_t i=0; i<CONST_SECT_SIZE; i+=128) {
         read_kernel_memory_in_buffer(kport, CONST_SECT_START_ADDR+i, 128, const_sect_buffer+i);
     }
 
-    uint64_t vtable_ptrs[16];
+    vm_offset_t vtable_ptrs[16];
     uint32_t vtable_ptrs_cnt=0;
 
     if (override) {
@@ -109,7 +110,7 @@ uint32_t dump_hierarchy(task_t kport, uint64_t read_addr, char *name, const char
                 FILE *fin;
                 char *line;
 
-                uint64_t gMetaClass_addr = calculate_gMetaClass_addr_from_getMetaClass(kport, vtable_ptrs[7]);
+                vm_offset_t gMetaClass_addr = calculate_gMetaClass_addr_from_getMetaClass(kport, vtable_ptrs[7]);
                 if (!IS_VALID_POINTER(gMetaClass_addr, COMMON_SECT_START_ADDR, COMMON_SECT_END_ADDR)) {
                     goto end;
                 }
@@ -211,7 +212,7 @@ uint32_t dump_hierarchy(task_t kport, uint64_t read_addr, char *name, const char
             }
             vtable_ptrs_cnt=0;
             for ( ;; i+=8) {    //advance to next vtable
-                uint64_t addr_junk=*(uint64_t*)(const_sect_buffer+i);
+                vm_offset_t addr_junk=*(vm_offset_t*)(const_sect_buffer+i);
                 if (addr_junk==0) {
                     break;
                 }
@@ -219,7 +220,7 @@ uint32_t dump_hierarchy(task_t kport, uint64_t read_addr, char *name, const char
         }
 
 
-        uint64_t curr_ptr = *(uint64_t*)(const_sect_buffer+i);
+        vm_offset_t curr_ptr = *(vm_offset_t*)(const_sect_buffer+i);
         if (curr_ptr!=0x0) {
             vtable_ptrs[vtable_ptrs_cnt]=curr_ptr;
             vtable_ptrs_cnt++;

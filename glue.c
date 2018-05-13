@@ -18,7 +18,7 @@ static const char * progname = "iokit-dumper";
 static int kmod_compare(const void * a, const void * b);
 static int kmod_ref_compare(const void * a, const void * b);
 
-uint64_t KextUnslidBaseAddress(const char *kext_id)
+vm_offset_t KextUnslidBaseAddress(const char *kext_id)
 {
     int exit_code = 0;
     int optchar = 0;
@@ -30,7 +30,7 @@ uint64_t KextUnslidBaseAddress(const char *kext_id)
     kmod_info_t *this_kmod;
     kmod_reference_t * kmod_ref;
     int ref_count;
-	uint64_t this_kmod_address;
+    vm_offset_t this_kmod_address;
     int i, j;
 
     int skip_kernel_comps = 0; // -k
