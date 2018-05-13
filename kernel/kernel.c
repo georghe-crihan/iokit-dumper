@@ -12,6 +12,7 @@ uint64_t kslide=0;
 
 uint64_t get_kslide(void)
 {
+#ifdef KERNEL_ASLR
     if (getuid() != 0) {
         return -1;
     }
@@ -22,6 +23,9 @@ uint64_t get_kslide(void)
     syscall(SYS_kas_info, KAS_INFO_KERNEL_TEXT_SLIDE_SELECTOR, &_kslide, &_kslide_sz);
     
     return _kslide;
+#else
+    return 0;
+#endif
 }
 
 /*

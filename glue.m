@@ -1,3 +1,4 @@
+#ifdef _x86_64_
 //
 //  glue.m
 //  ropnroll_final
@@ -14,3 +15,4 @@ uint64_t KextUnslidBaseAddress(const char *KextBundleName)
 {
     return (UInt64)[((NSNumber*)(((__bridge NSDictionary*)OSKextCopyLoadedKextInfo(NULL, NULL))[[NSString stringWithUTF8String:KextBundleName]][@"OSBundleLoadAddress"])) unsignedLongLongValue];
 }
+#endif
