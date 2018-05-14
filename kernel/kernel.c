@@ -100,6 +100,14 @@ mach_port_t get_kernel_task(void)
     pid_for_task(ktask, &pid);
     if (pid!=0) {
         __dbg("kernel task was returned by processor_set_tasks(), but it appears to have the wrong PID. If you are reading this, the universe is probably collapsing.");
+
+    if (setgid(getgid()) == -1) {
+        /* handle error condition */
+    }
+
+    if (setuid(getuid()) == -1) {
+        /* handle error condition */
+    }
         return 0;
     }
     

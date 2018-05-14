@@ -61,7 +61,9 @@ int main(int argc, char *argv[]) {
 #ifdef _x86_64_
                     read_addr=0xffffff8000200000;
 #else
-                    // Now what?
+                    // otool -l /mach_kernel|grep -A3 _TEXT
+                    // 'vmaddr' is your friend.
+                    read_addr=0x00111000;
 #endif
                 } else {
                     read_addr=KextUnslidBaseAddress(optarg);
