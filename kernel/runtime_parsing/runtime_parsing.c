@@ -6,10 +6,10 @@
 //  Copyright © 2015 jndok. All rights reserved.
 //
 
-#include <mach/vm_types.h>
+#include "xtypes.h" 
 #include "runtime_parsing.h"
 
-__attribute__((always_inline)) struct _B(mach_header) *find_mach_header_kmem_addr(task_t task, vm_offset_t addr)
+__attribute__((always_inline)) struct _B(mach_header) *find_mach_header_kmem_addr(task_t task, xvm_offset_t addr)
 {
     struct _B(mach_header) *header = (struct _B(mach_header) *)read_kernel_memory(task, addr, sizeof(struct _B(mach_header)));
     if (header->magic != _B(MH_MAGIC)) {

@@ -1,3 +1,4 @@
+#ifdef KERNEL
 int
 kas_info(struct proc *p,
 			  struct kas_info_args *uap,
@@ -71,3 +72,4 @@ kas_info(struct proc *p,
 	return 0;
 #endif /* !SECURE_KERNEL */
 }
+#endif

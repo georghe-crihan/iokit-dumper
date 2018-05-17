@@ -6,10 +6,10 @@
 //  Copyright © 2015 jndok. All rights reserved.
 //
 
-#include <mach/vm_types.h>
+#include "xtypes.h"
 #include "analysis.h"
 
-__attribute__((always_inline)) MetaClass_Object_t *parse_MetaClass_object(task_t task, vm_offset_t addr)
+__attribute__((always_inline)) MetaClass_Object_t *parse_MetaClass_object(task_t task, xvm_offset_t addr)
 {
     MetaClass_Object_t *MetaClass_object = malloc(sizeof(MetaClass_Object_t));
     pointer_t buffer = read_kernel_memory(task, addr, 64);
@@ -18,7 +18,7 @@ __attribute__((always_inline)) MetaClass_Object_t *parse_MetaClass_object(task_t
     return MetaClass_object;
 }
 
-__attribute__((always_inline)) OSSymbol_Object_t *parse_OSSymbol_object(task_t task, vm_offset_t addr)
+__attribute__((always_inline)) OSSymbol_Object_t *parse_OSSymbol_object(task_t task, xvm_offset_t addr)
 {
     OSSymbol_Object_t *OSSymbol_object = malloc(sizeof(OSSymbol_Object_t));
     pointer_t buffer = read_kernel_memory(task, addr, 64);
@@ -38,7 +38,7 @@ __attribute__((always_inline)) uint32_t getOSSymbolNameLength(OSSymbol_Object_t 
     return (uint32_t)object->name_length;
 }
 
-__attribute__((always_inline)) vm_offset_t calculate_gMetaClass_addr_from_getMetaClass(task_t task, vm_offset_t getMetaClass_method)
+__attribute__((always_inline)) xvm_offset_t calculate_gMetaClass_addr_from_getMetaClass(task_t task, xvm_offset_t getMetaClass_method)
 {
     pointer_t method_buffer = read_kernel_memory(task, getMetaClass_method, 32);
     if (*(char*)(method_buffer+12) != (char)0xc3) {
@@ -46,7 +46,7 @@ __attribute__((always_inline)) vm_offset_t calculate_gMetaClass_addr_from_getMet
     }
     
     uint32_t relative_off=*(uint32_t*)(method_buffer+7);
-    vm_offset_t absolute_off=getMetaClass_method+11;
+    xvm_offset_t absolute_off=getMetaClass_method+11;
     
     return (absolute_off+relative_off);
 }

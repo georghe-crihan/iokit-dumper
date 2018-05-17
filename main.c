@@ -33,12 +33,12 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <getopt.h>
-#include <mach/vm_types.h>
+#include "xtypes.h" 
 
 #include "import.h"
 
-extern vm_offset_t kslide;
-extern vm_offset_t KextUnslidBaseAddress(const char *KextBundleName);
+extern xvm_offset_t kslide;
+extern xvm_offset_t KextUnslidBaseAddress(const char *KextBundleName);
 
 void usage(void)
 {
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
     int option=0;
 
     char *name=NULL;
-    vm_offset_t read_addr=0;
+    xvm_offset_t read_addr=0;
     char *path=NULL;
     boolean_t override=FALSE;
 

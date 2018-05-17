@@ -23,25 +23,25 @@
 #ifdef _x86_64_
 #define PRINT_POINTERS(n, buffer) {   \
     for(uint32_t i=0; i<n*8; i+=8) {   \
-        printf("%#llx\n", *(vm_offset_t*)(buffer+i));  \
+        printf("%#llx\n", *(xvm_offset_t*)(buffer+i));  \
     }   \
 }
 
 #define PRINT_UNSLID_POINTERS(n, buffer, slide) {   \
     for(uint32_t i=0; i<n*8; i+=8) {   \
-        printf("%#llx --> %#llx\n", *(vm_offset_t*)(buffer+i), (*(vm_offset_t*)(buffer+i))-kslide);  \
+        printf("%#llx --> %#llx\n", *(xvm_offset_t*)(buffer+i), (*(xvm_offset_t*)(buffer+i))-kslide);  \
     }   \
 }
 #else
 #define PRINT_POINTERS(n, buffer) {   \
     for(uint32_t i=0; i<n*4; i+=4) {   \
-        printf("%#llx\n", *(vm_offset_t*)(buffer+i));  \
+        printf("%#llx\n", *(xvm_offset_t*)(buffer+i));  \
     }   \
 }
 
 #define PRINT_UNSLID_POINTERS(n, buffer, slide) {   \
     for(uint32_t i=0; i<n*4; i+=4) {   \
-        printf("%#llx --> %#llx\n", *(vm_offset_t*)(buffer+i), (*(vm_offset_t*)(buffer+i))-kslide);  \
+        printf("%#llx --> %#llx\n", *(xvm_offset_t*)(buffer+i), (*(xvm_offset_t*)(buffer+i))-kslide);  \
     }   \
 }
 #endif
